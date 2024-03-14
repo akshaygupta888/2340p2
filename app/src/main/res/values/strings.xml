@@ -6,7 +6,7 @@
     <string name="second_fragment_label">Second Fragment</string>
     <string name="next">Next</string>
     <string name="previous">Previous</string>
-
+    <string name="lorem_ipsum">Lorem ipsum</string>
 
     <string name="title_activity_login">LoginActivity</string>
     <string name="prompt_email">Email</string>
@@ -18,4 +18,7 @@
     <string name="invalid_password">Password must be longer than 5 characters</string>
     <string name="login_failed">"Login failed"</string>
     <string name="sign_up_failed">"Sign up failed"</string>
+
+    <string name="action_sign_in_short">sign in short</string>
+    <string name="action_sign_in">sign in</string>
 </resources>

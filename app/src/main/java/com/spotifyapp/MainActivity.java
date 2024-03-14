@@ -27,7 +27,7 @@ import okhttp3.Response;
 public class MainActivity extends AppCompatActivity {
 
     public static final String CLIENT_ID = "0acfab54a1484caea991efa0dda5b0e9";
-    public static final String REDIRECT_URI = "ObjectsDesignSpotifyApp://auth";
+    public static final String REDIRECT_URI = "spotifyapp://auth";
 
     public static final int AUTH_TOKEN_REQUEST_CODE = 0;
     public static final int AUTH_CODE_REQUEST_CODE = 1;
@@ -90,7 +90,6 @@ public class MainActivity extends AppCompatActivity {
         final AuthorizationRequest request = getAuthenticationRequest(AuthorizationResponse.Type.CODE);
         AuthorizationClient.openLoginActivity(MainActivity.this, AUTH_CODE_REQUEST_CODE, request);
     }
-
 
     /**
      * When the app leaves this activity to momentarily get a token/code, this function
@@ -174,7 +173,6 @@ public class MainActivity extends AppCompatActivity {
         return new AuthorizationRequest.Builder(CLIENT_ID, type, getRedirectUri().toString())
                 .setShowDialog(false)
                 .setScopes(new String[] { "user-read-email" }) // <--- Change the scope of your requested token here
-                .setCampaign("your-campaign-token")
                 .build();
     }
 
