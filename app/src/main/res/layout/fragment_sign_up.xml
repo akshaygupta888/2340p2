@@ -11,6 +11,12 @@
     android:paddingBottom="@dimen/fragment_vertical_margin"
     tools:context=".ui.login.SignUpFragment">
 
+    <TextView
+        android:id="@+id/signup_header"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Sign Up" />
+
     <EditText
         android:id="@+id/email"
         android:layout_width="0dp"

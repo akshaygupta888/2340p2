@@ -74,7 +74,7 @@ public class SpotifyAPI {
 
         public String[] getBounds() {
             Date d = new Date();
-
+            return null;
             // TODO: generate a date bound [start_date, end_date] from the given enum and the current day
         }
     }

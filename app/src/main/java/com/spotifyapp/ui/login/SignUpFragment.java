@@ -41,7 +41,6 @@ public class SignUpFragment extends Fragment {
 
         binding = FragmentSignUpBinding.inflate(inflater, container, false);
         return binding.getRoot();
-
     }
 
     @Override
