@@ -22,4 +22,7 @@
     <string name="action_sign_in_short">sign in short</string>
     <string name="action_sign_in">sign in</string>
     <string name="title_activity_main2">MainActivity2</string>
+    <string name="title_activity_wrapped">WrappedActivity</string>
+    <string name="tab_text_1">Tab 1</string>
+    <string name="tab_text_2">Tab 2</string>
 </resources>

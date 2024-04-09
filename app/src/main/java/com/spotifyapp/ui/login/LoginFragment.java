@@ -1,5 +1,6 @@
 package com.spotifyapp.ui.login;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -21,6 +22,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.spotifyapp.R;
+import com.spotifyapp.WrappedActivity;
 import com.spotifyapp.databinding.FragmentLoginBinding;
 
 import java.util.HashMap;
@@ -51,7 +53,6 @@ public class LoginFragment extends Fragment {
         final EditText emailEditText = binding.email;
         final EditText passwordEditText = binding.password;
         final Button loginButton = binding.login;
-        final ProgressBar loadingProgressBar = binding.loading;
 
         firebaseAuth = FirebaseAuth.getInstance();
         loginViewModel = new ViewModelProvider(this, new LoginViewModelFactory())
@@ -74,7 +75,6 @@ public class LoginFragment extends Fragment {
             if (loginResult == null) {
                 return;
             }
-            loadingProgressBar.setVisibility(View.GONE);
             if (loginResult.getError() != null) {
                 showLoginFailed(loginResult.getError());
             }
@@ -82,18 +82,14 @@ public class LoginFragment extends Fragment {
                 firebaseAuth.signInWithEmailAndPassword(
                         emailEditText.getText().toString(),
                         passwordEditText.getText().toString()
-                ).addOnCompleteListener((Executor) LoginFragment.this, task -> {
+                ).addOnCompleteListener(requireActivity(), task -> {
                     if (task.isSuccessful()) {
                         FirebaseUser user = firebaseAuth.getCurrentUser();
                         if (user != null) {
-                            FirebaseFirestore db = FirebaseFirestore.getInstance();
-                            Map<String, Object> userData = new HashMap<>();
-                            userData.put("email", user.getEmail());
-                            db.collection("users").document(user.getUid())
-                                    .set(userData)
-                                    .addOnSuccessListener(unused -> updateUiWithUser(loginResult.getSuccess()))
-                                    .addOnFailureListener(e -> showLoginFailed(R.string.login_failed));
+                            retrieveSpotifyToken(user.getUid());
                         }
+                    } else {
+                        showLoginFailed(R.string.login_failed);
                     }
                 });
             } else {
@@ -129,16 +125,28 @@ public class LoginFragment extends Fragment {
         });
 
         loginButton.setOnClickListener(v -> {
-            loadingProgressBar.setVisibility(View.VISIBLE);
             loginViewModel.login(emailEditText.getText().toString(),
                     passwordEditText.getText().toString());
         });
     }
 
-    private void updateUiWithUser(LoggedInUserView model) {
-        String welcome = getString(R.string.welcome) + model.getDisplayName();
-        Toast.makeText(requireContext(), welcome, Toast.LENGTH_LONG).show();
-        // TODO: Navigate to the next screen or perform necessary actions after login.
+    private void retrieveSpotifyToken(String uid) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        db.collection("users").document(uid).get()
+                .addOnSuccessListener(documentSnapshot -> {
+                    if (documentSnapshot.exists()) {
+                        updateUiWithUser();
+                    } else {
+                        showLoginFailed(R.string.login_failed);
+                    }
+                })
+                .addOnFailureListener(e -> showLoginFailed(R.string.login_failed));
+    }
+
+    private void updateUiWithUser() {
+        Intent intent = new Intent(requireActivity(), WrappedActivity.class);
+        startActivity(intent);
+        requireActivity().finish();
     }
 
     private void showLoginFailed(Integer errorString) {

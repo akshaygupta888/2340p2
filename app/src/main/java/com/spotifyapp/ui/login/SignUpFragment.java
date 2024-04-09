@@ -1,5 +1,7 @@
 package com.spotifyapp.ui.login;
 
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -9,29 +11,49 @@ import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ProgressBar;
 import android.widget.Toast;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
-
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.spotifyapp.R;
+import com.spotifyapp.WrappedActivity;
 import com.spotifyapp.databinding.FragmentSignUpBinding;
-
 import java.util.HashMap;
 import java.util.Map;
 
 public class SignUpFragment extends Fragment {
 
+    public interface OnButtonClickListener {
+        void onButtonClicked();
+    }
+
+    private OnButtonClickListener listener;
     private FirebaseAuth firebaseAuth;
     private LoginViewModel loginViewModel;
     private FragmentSignUpBinding binding;
+
+    private EditText emailText;
+    private EditText passwordText;
+
+    private Button loginButton;
+    private Button signupButton;
+    private Button submitButton;
+    private Button connectSpotifyButton;
+
+    @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+        if (context instanceof OnButtonClickListener) {
+            listener = (OnButtonClickListener) context;
+        } else {
+            throw new RuntimeException(context.toString() + " must implement OnButtonClickListener");
+        }
+    }
 
     @Nullable
     @Override
@@ -40,6 +62,7 @@ public class SignUpFragment extends Fragment {
                              @Nullable Bundle savedInstanceState) {
 
         binding = FragmentSignUpBinding.inflate(inflater, container, false);
+
         return binding.getRoot();
     }
 
@@ -52,14 +75,19 @@ public class SignUpFragment extends Fragment {
 
         final EditText emailEditText = binding.email;
         final EditText passwordEditText = binding.password;
-        final Button signUpButton = binding.signUp;
-        final ProgressBar loadingProgressBar = binding.loading;
+
+        emailText = getActivity().findViewById(R.id.email);
+        passwordText = getActivity().findViewById(R.id.password);
+        loginButton = getActivity().findViewById(R.id.login_button);
+        signupButton = getActivity().findViewById(R.id.signup_button);
+        submitButton = getActivity().findViewById(R.id.signup_submit_button);
+        connectSpotifyButton = getActivity().findViewById(R.id.connect_spotify_button);
 
         loginViewModel.getLoginFormState().observe(getViewLifecycleOwner(), loginFormState -> {
             if (loginFormState == null) {
                 return;
             }
-            signUpButton.setEnabled(loginFormState.isDataValid());
+            submitButton.setEnabled(loginFormState.isDataValid());
             if (loginFormState.getEmailError() != null) {
                 emailEditText.setError(getString(loginFormState.getEmailError()));
             }
@@ -95,8 +123,7 @@ public class SignUpFragment extends Fragment {
             return false;
         });
 
-        signUpButton.setOnClickListener(v -> {
-            loadingProgressBar.setVisibility(View.VISIBLE);
+        submitButton.setOnClickListener(v -> {
             signUp(emailEditText.getText().toString(),
                     passwordEditText.getText().toString());
         });
@@ -122,14 +149,20 @@ public class SignUpFragment extends Fragment {
         userData.put("email", user.getEmail());
         db.collection("users").document(user.getUid())
                 .set(userData)
-                .addOnSuccessListener(unused -> updateUiWithUser(user.getEmail()))
+                .addOnSuccessListener(unused -> {
+                    emailText.setVisibility(View.GONE);
+                    passwordText.setVisibility(View.GONE);
+                    loginButton.setVisibility(View.GONE);
+                    signupButton.setVisibility(View.GONE);
+                    submitButton.setVisibility(View.GONE);
+                    connectSpotifyButton.setVisibility(View.VISIBLE);
+                    connectSpotifyButton.setOnClickListener((v) -> {
+                        if (listener != null) {
+                            listener.onButtonClicked();
+                        }
+                    });
+                })
                 .addOnFailureListener(e -> showSignUpFailed(R.string.sign_up_failed));
-    }
-
-    private void updateUiWithUser(String email) {
-        String welcome = getString(R.string.welcome) + email;
-        Toast.makeText(requireContext(), welcome, Toast.LENGTH_LONG).show();
-        // TODO: Navigate to the next screen or perform necessary actions after sign-up.
     }
 
     private void showSignUpFailed(@StringRes Integer errorString) {
