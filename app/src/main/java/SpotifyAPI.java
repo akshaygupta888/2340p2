@@ -1,81 +1,168 @@
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.json.JSONTokener;
+
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
+import okhttp3.HttpUrl;
 import okhttp3.OkHttpClient;
-
-// TODO: generate algorithm for top genres
-
-// TODO: generate algorithm for total minutes listened maybe???? i don't think its possible to be accurate tbh
-// TODO: (don't think its possible to be accurate for this)
-
-// NOTE: time_range=(long_term | medium_term | short_term)
-// long_term = all_time, medium_term = 6 months, short_term 1 month
-// TODO: generate algorithm for getting 1 week and 1 year durations
-
-// TODO: create TimeDuration class or enum
+import okhttp3.Request;
+import okhttp3.Response;
 
 public class SpotifyAPI {
+
+    private enum Time {
+        SHORT_TERM,
+        MEDIUM_TERM,
+        LONG_TERM
+    }
     private final String accessToken;
     private final OkHttpClient client;
-    private final String artistsEndpoint = "https://api.spotify.com/v1/me/top/artists";
-    private final String songsEndpoint = "https://api.spotify.com/v1/me/top/tracks";
 
+    private String timeRange;
+    private final static String limit = "10";
+    private final static String artistsEndpoint = "https://api.spotify.com/v1/me/top/artists";
+    private final static String songsEndpoint = "https://api.spotify.com/v1/me/top/tracks";
+    public List<String> topArtists;
+    public List<String> topSongs;
+    public List<String> topGenres;
 
     public SpotifyAPI(String accessToken) {
         this.client = new OkHttpClient();
         this.accessToken = accessToken;
+        this.timeRange = "long_term";
     }
 
-    public static List<String> topArtists() {
+    private void updateData() {
+        try {
+            topArtists = topArtists();
+            topSongs = topSongs();
+            topGenres = topGenres();
+        } catch (IOException e) {
+            System.out.println("Network failure");
+        }
+    }
+
+    private String urlBuilder(String endpoint, String limit) {
+        HttpUrl.Builder urlBuilder = Objects.requireNonNull(HttpUrl.parse(endpoint)).newBuilder();
+        urlBuilder.addQueryParameter("time_range", timeRange);
+        urlBuilder.addQueryParameter("limit", limit);
+        return urlBuilder.build().toString();
+    }
+
+    private String urlBuilder(String endpoint) {
+        return urlBuilder(endpoint, limit);
+    }
+
+    private List<String> topArtists() throws IOException {
         List<String> topArtists = new ArrayList<>();
 
-        // TODO: generate top 10 artists by time period
+
+        Request request = new Request.Builder()
+                .url(urlBuilder(artistsEndpoint))
+                .addHeader("Authorization", "Bearer " + accessToken)
+                .build();
+
+        try (Response response = client.newCall(request).execute()) {
+            if (!response.isSuccessful()) throw new IOException("Unexpected code " + response);
+
+            assert response.body() != null;
+            JSONObject jsonObject = new JSONObject(response.body().string());
+            JSONArray items = jsonObject.getJSONArray("items");
+
+            for (int i = 0; i < items.length(); i++) {
+                JSONObject artistObject = items.getJSONObject(i);
+                String name = artistObject.getString("name");
+                topArtists.add(name);
+            }
+        } catch (JSONException e) {
+            throw new RuntimeException(e);
+        }
 
         return topArtists;
     }
 
-    public static List<String> topSongs() {
+    private List<String> topSongs() {
         List<String> topSongs = new ArrayList<>();
 
-        // TODO: generate top 10 songs by time period
+
+        Request request = new Request.Builder()
+                .url(urlBuilder(songsEndpoint))
+                .addHeader("Authorization", "Bearer " + accessToken)
+                .build();
+
+        try (Response response = client.newCall(request).execute()) {
+            if (!response.isSuccessful()) throw new IOException("Unexpected code " + response);
+
+            assert response.body() != null;
+            JSONObject jsonObject = new JSONObject(response.body().string());
+            JSONArray items = jsonObject.getJSONArray("items");
+
+            for (int i = 0; i < items.length(); i++) {
+                JSONObject artistObject = items.getJSONObject(i);
+                String name = artistObject.getString("name");
+                topSongs.add(name);
+            }
+        } catch (JSONException | IOException e) {
+            throw new RuntimeException(e);
+        }
 
         return topSongs;
     }
 
-    public static List<String> topGenres() {
+    private List<String> topGenres() {
         List<String> topGenres = new ArrayList<>();
+        Map<String, Integer> topGenresMap = new HashMap<>();
 
-        // TODO: generate top 10 genres by time period
+        Request request = new Request.Builder()
+                .url(urlBuilder(artistsEndpoint, "50"))
+                .addHeader("Authorization", "Bearer " + accessToken)
+                .build();
 
-        /*
-        * Algorithm idea:
-        * Take top 100 artists in selected time period
-        * Count up the genres listed in a hashmap with count
-        * Return top 10
-        * */
+        try (Response response = client.newCall(request).execute()) {
+            if (!response.isSuccessful()) throw new IOException("Unexpected code " + response);
+
+            assert response.body() != null;
+            JSONObject jsonObject = new JSONObject(response.body().string());
+            JSONArray items = jsonObject.getJSONArray("items");
+
+            for (int i = 0; i < items.length(); i++) {
+                JSONObject artistObject = items.getJSONObject(i);
+                JSONArray genres = artistObject.getJSONArray("genres");
+
+                for (int j = 0; j < genres.length(); j++) {
+                    String genre = genres.getString(j);
+                    topGenresMap.put(genre, topGenresMap.getOrDefault(genre, 0) + 1);
+                }
+            }
+        } catch (JSONException | IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        List<Map.Entry<String, Integer>> sortedList = new ArrayList<>(topGenresMap.entrySet());
+        sortedList.sort(Map.Entry.comparingByValue(Comparator.reverseOrder()));
+
+        // Extracting top 10 genres
+        int count = 0;
+        for (Map.Entry<String, Integer> entry : sortedList) {
+            if (count >= 10) break;
+            topGenres.add(entry.getKey());
+            count++;
+        }
 
         return topGenres;
     }
 
-    private enum Time {
-        WEEK,
-        MONTH,
-        YEAR,
-        ALL
-    }
-
-    private class TimeDuration {
-        private Time time;
-
-        public TimeDuration(Time time) {
-            this.time = time;
-        }
-
-        public String[] getBounds() {
-            Date d = new Date();
-            return null;
-            // TODO: generate a date bound [start_date, end_date] from the given enum and the current day
-        }
+    public void setTimeRange(String timeRange) {
+        this.timeRange = timeRange;
+        updateData();
     }
 }

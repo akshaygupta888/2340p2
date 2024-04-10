@@ -150,7 +150,9 @@ public class LoginFragment extends Fragment {
     }
 
     private void showLoginFailed(Integer errorString) {
-        Toast.makeText(requireContext(), errorString, Toast.LENGTH_SHORT).show();
+        if (isAdded() && getActivity() != null) {
+            Toast.makeText(requireContext(), errorString, Toast.LENGTH_SHORT).show();
+        }
     }
 
     @Override
