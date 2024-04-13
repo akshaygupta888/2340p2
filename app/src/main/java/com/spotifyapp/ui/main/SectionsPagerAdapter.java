@@ -15,6 +15,7 @@ import androidx.viewpager2.adapter.FragmentStateAdapter;
 import com.spotifyapp.R;
 import com.spotifyapp.SpotifyAPI;
 import com.spotifyapp.wrapped_fragments.WrappedArtists;
+import com.spotifyapp.wrapped_fragments.WrappedSongs;
 
 public class SectionsPagerAdapter extends FragmentPagerAdapter {
 
@@ -32,6 +33,12 @@ public class SectionsPagerAdapter extends FragmentPagerAdapter {
     @NonNull
     @Override
     public Fragment getItem(int position) {
+        if (position == 0) {
+            return WrappedArtists.newInstance(spotifyAPI);
+        } else if (position == 1) {
+            return WrappedSongs.newInstance(spotifyAPI);
+        }
+
         return WrappedArtists.newInstance(spotifyAPI);
     }
 

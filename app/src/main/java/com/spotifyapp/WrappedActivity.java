@@ -10,7 +10,6 @@ import com.google.android.material.tabs.TabLayout;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.spotifyapp.SpotifyAPI;
 import com.spotifyapp.ui.main.SectionsPagerAdapter;
 import com.spotifyapp.databinding.ActivityWrappedBinding;
 
@@ -54,14 +53,12 @@ public class WrappedActivity extends AppCompatActivity implements SpotifyAPI.Spo
 
     @Override
     public void onDataLoaded() {
-        // Data loaded successfully, setup view pager
         setupViewPager();
         Toast.makeText(this, "Successfully got spotify credentials", Toast.LENGTH_SHORT).show();
     }
 
     @Override
     public void onDataLoadError(String errorMessage) {
-        // Error occurred while loading data
         Toast.makeText(this, errorMessage, Toast.LENGTH_SHORT).show();
     }
 
