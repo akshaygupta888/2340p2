@@ -1,16 +1,15 @@
 package com.spotifyapp.wrapped_fragments;
 
 import android.os.Bundle;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
-import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
 
 import com.spotifyapp.R;
 import com.spotifyapp.SpotifyAPI;
@@ -19,18 +18,18 @@ import com.spotifyapp.ui.main.PageViewModel;
 import java.util.ArrayList;
 import java.util.List;
 
-public class WrappedArtists extends Fragment {
+public class WrappedGenres extends Fragment {
 
     private static final String ARG_SECTION_NUMBER = "1";
     private RecyclerView recyclerView;
     private PageViewModel pageViewModel;
     private SpotifyAPI spotifyAPI;
 
-    public WrappedArtists() {}
+    public WrappedGenres() {}
 
     @SuppressWarnings("unused")
-    public static WrappedArtists newInstance(SpotifyAPI spotifyAPI) {
-        WrappedArtists fragment = new WrappedArtists();
+    public static WrappedGenres newInstance(SpotifyAPI spotifyAPI) {
+        WrappedGenres fragment = new WrappedGenres();
         Bundle bundle = new Bundle();
         bundle.putInt(ARG_SECTION_NUMBER, 1);
         fragment.setSpotifyAPI(spotifyAPI);
@@ -59,29 +58,29 @@ public class WrappedArtists extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_wrapped_genres_list, container, false);
 
-        Log.d("Wrapped Artists", "onCreateView called");
+        Log.d("Wrapped Genres", "onCreateView called");
 
         recyclerView = view.findViewById(R.id.list);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-        ArtistsViewAdapter adapter = new ArtistsViewAdapter(new ArrayList<>());
+        GenresViewAdapter adapter = new GenresViewAdapter(new ArrayList<>());
         recyclerView.setAdapter(adapter);
 
-        if (spotifyAPI != null && spotifyAPI.getTopArtists() != null) {
-            List<String> topArtists = spotifyAPI.getTopArtists();
-            Log.d("WrappedArtistsFragment", "Top Artists: " + topArtists); // Log top artists
-            updateAdapter(topArtists);
+        if (spotifyAPI != null && spotifyAPI.getTopGenres() != null) {
+            List<String> topGenres = spotifyAPI.getTopGenres();
+            Log.d("WrappedGenresFragment", "Top Genres: " + topGenres);
+            updateAdapter(topGenres);
         } else {
-            Log.d("WrappedArtistsFragment", "Spotify API or top artists list is null");
+            Log.d("WrappedGenresFragment", "Spotify API or top genres list is null");
         }
 
         return view;
     }
 
 
-    private void updateAdapter(List<String> topArtists) {
-        ArtistsViewAdapter adapter = (ArtistsViewAdapter) recyclerView.getAdapter();
+    private void updateAdapter(List<String> topGenres) {
+        GenresViewAdapter adapter = (GenresViewAdapter) recyclerView.getAdapter();
         if (adapter != null) {
-            adapter.updateData(topArtists);
+            adapter.updateData(topGenres);
         }
     }
 }

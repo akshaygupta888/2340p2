@@ -15,12 +15,13 @@ import androidx.viewpager2.adapter.FragmentStateAdapter;
 import com.spotifyapp.R;
 import com.spotifyapp.SpotifyAPI;
 import com.spotifyapp.wrapped_fragments.WrappedArtists;
+import com.spotifyapp.wrapped_fragments.WrappedGenres;
 import com.spotifyapp.wrapped_fragments.WrappedSongs;
 
 public class SectionsPagerAdapter extends FragmentPagerAdapter {
 
     @StringRes
-    private static final int[] TAB_TITLES = new int[]{R.string.tab_text_1, R.string.tab_text_2};
+    private static final int[] TAB_TITLES = new int[]{R.string.tab_text_1, R.string.tab_text_2, R.string.tab_text_3};
     private final Context mContext;
     private final SpotifyAPI spotifyAPI;
 
@@ -37,6 +38,8 @@ public class SectionsPagerAdapter extends FragmentPagerAdapter {
             return WrappedArtists.newInstance(spotifyAPI);
         } else if (position == 1) {
             return WrappedSongs.newInstance(spotifyAPI);
+        } else if (position == 2) {
+            return WrappedGenres.newInstance(spotifyAPI);
         }
 
         return WrappedArtists.newInstance(spotifyAPI);
