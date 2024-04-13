@@ -1,77 +1,75 @@
 package com.spotifyapp;
 
 import android.os.Bundle;
-
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.snackbar.Snackbar;
-import com.google.android.material.tabs.TabLayout;
-
-import androidx.viewpager.widget.ViewPager;
-import androidx.appcompat.app.AppCompatActivity;
-
-import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.View;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.viewpager.widget.ViewPager;
+
+import com.google.android.material.tabs.TabLayout;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.spotifyapp.SpotifyAPI;
 import com.spotifyapp.ui.main.SectionsPagerAdapter;
 import com.spotifyapp.databinding.ActivityWrappedBinding;
 
-public class WrappedActivity extends AppCompatActivity {
+public class WrappedActivity extends AppCompatActivity implements SpotifyAPI.SpotifyDataListener {
 
     private ActivityWrappedBinding binding;
     private FirebaseFirestore db;
     private String authToken;
     private String uid;
+    private SpotifyAPI spotifyAPI;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         binding = ActivityWrappedBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        SectionsPagerAdapter sectionsPagerAdapter = new SectionsPagerAdapter(this, getSupportFragmentManager());
+        db = FirebaseFirestore.getInstance();
+        getUserToken();
+    }
+
+    private void getUserToken() {
+        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        if (currentUser != null) {
+            uid = currentUser.getUid();
+            db.collection("users").document(uid)
+                    .get()
+                    .addOnSuccessListener(documentSnapshot -> {
+                        if (documentSnapshot.exists()) {
+                            authToken = documentSnapshot.getString("authToken");
+                            spotifyAPI = new SpotifyAPI(authToken, this, this);
+                        } else {
+                            Toast.makeText(this, "Failed to get spotify credentials", Toast.LENGTH_SHORT).show();
+                        }
+                    })
+                    .addOnFailureListener(e -> {
+                        Toast.makeText(this, "Failed to get spotify credentials", Toast.LENGTH_SHORT).show();
+                    });
+        }
+    }
+
+    @Override
+    public void onDataLoaded() {
+        // Data loaded successfully, setup view pager
+        setupViewPager();
+        Toast.makeText(this, "Successfully got spotify credentials", Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onDataLoadError(String errorMessage) {
+        // Error occurred while loading data
+        Toast.makeText(this, errorMessage, Toast.LENGTH_SHORT).show();
+    }
+
+    private void setupViewPager() {
+        SectionsPagerAdapter sectionsPagerAdapter = new SectionsPagerAdapter(this, getSupportFragmentManager(), spotifyAPI);
         ViewPager viewPager = binding.viewPager;
         viewPager.setAdapter(sectionsPagerAdapter);
         TabLayout tabs = binding.tabs;
         tabs.setupWithViewPager(viewPager);
-        FloatingActionButton fab = binding.fab;
-
-        db = FirebaseFirestore.getInstance();
-
-        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
-
-        if (currentUser != null) {
-            uid = currentUser.getUid();
-            getUserToken(uid);
-        }
-
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
-    }
-
-    private void getUserToken(String uid) {
-        db.collection("users").document(uid)
-                .get()
-                .addOnSuccessListener(documentSnapshot -> {
-                    if (documentSnapshot.exists()) {
-                        authToken = documentSnapshot.getString("authToken");
-                    } else {
-                        Toast.makeText(this, "Failed to get spotify credentials", Toast.LENGTH_SHORT).show();
-                    }
-                })
-                .addOnFailureListener(e -> {
-                    Toast.makeText(this, "Failed to get spotify credentials", Toast.LENGTH_SHORT).show();
-                });
     }
 }

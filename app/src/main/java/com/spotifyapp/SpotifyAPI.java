@@ -1,12 +1,18 @@
+package com.spotifyapp;
+
+import android.annotation.SuppressLint;
+import android.content.Context;
+import android.os.AsyncTask;
+import android.util.Log;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.json.JSONTokener;
 
 import java.io.IOException;
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -19,35 +25,73 @@ import okhttp3.Response;
 
 public class SpotifyAPI {
 
-    private enum Time {
-        SHORT_TERM,
-        MEDIUM_TERM,
-        LONG_TERM
-    }
     private final String accessToken;
     private final OkHttpClient client;
-
     private String timeRange;
     private final static String limit = "10";
     private final static String artistsEndpoint = "https://api.spotify.com/v1/me/top/artists";
     private final static String songsEndpoint = "https://api.spotify.com/v1/me/top/tracks";
-    public List<String> topArtists;
-    public List<String> topSongs;
-    public List<String> topGenres;
+    private final WeakReference<Context> contextRef;
+    private SpotifyDataListener dataListener;
+    private List<String> topArtists;
+    private List<String> topSongs;
+    private List<String> topGenres;
 
-    public SpotifyAPI(String accessToken) {
-        this.client = new OkHttpClient();
-        this.accessToken = accessToken;
-        this.timeRange = "long_term";
+    public List<String> getTopArtists() {
+        return topArtists;
     }
 
-    private void updateData() {
-        try {
-            topArtists = topArtists();
-            topSongs = topSongs();
-            topGenres = topGenres();
-        } catch (IOException e) {
-            System.out.println("Network failure");
+    public List<String> getTopSongs() {
+        return topSongs;
+    }
+
+    public List<String> getTopGenres() {
+        return topGenres;
+    }
+
+    public interface SpotifyDataListener {
+        void onDataLoaded();
+        void onDataLoadError(String errorMessage);
+    }
+
+    public SpotifyAPI(String accessToken, Context context, SpotifyDataListener listener) {
+        this.accessToken = accessToken;
+        this.client = new OkHttpClient();
+        this.timeRange = "long_term";
+        this.contextRef = new WeakReference<>(context);
+        this.dataListener = listener;
+        new UpdateDataTask().execute();
+    }
+
+    @SuppressLint("StaticFieldLeak")
+    private class UpdateDataTask extends AsyncTask<Void, Void, Boolean> {
+
+        @Override
+        protected Boolean doInBackground(Void... voids) {
+            try {
+                topArtists = fetchTopArtists();
+                topSongs = fetchTopSongs();
+                topGenres = fetchTopGenres();
+                return true;
+            } catch (IOException | JSONException e) {
+                Log.e("SpotifyAPI", "Error fetching data", e);
+                return false;
+            }
+        }
+
+        @Override
+        protected void onPostExecute(Boolean success) {
+            if (success) {
+                // Notify the listener that data loading is complete
+                if (dataListener != null) {
+                    dataListener.onDataLoaded();
+                }
+            } else {
+                // Notify the listener about the error
+                if (dataListener != null) {
+                    dataListener.onDataLoadError("Error loading data");
+                }
+            }
         }
     }
 
@@ -62,9 +106,8 @@ public class SpotifyAPI {
         return urlBuilder(endpoint, limit);
     }
 
-    private List<String> topArtists() throws IOException {
+    private List<String> fetchTopArtists() throws IOException, JSONException {
         List<String> topArtists = new ArrayList<>();
-
 
         Request request = new Request.Builder()
                 .url(urlBuilder(artistsEndpoint))
@@ -72,9 +115,11 @@ public class SpotifyAPI {
                 .build();
 
         try (Response response = client.newCall(request).execute()) {
-            if (!response.isSuccessful()) throw new IOException("Unexpected code " + response);
+            if (!response.isSuccessful()) {
+                Log.d("SpotifyAPI", "Top artists fetched unsuccessfully.");
+                throw new IOException("Unexpected code " + response);
+            }
 
-            assert response.body() != null;
             JSONObject jsonObject = new JSONObject(response.body().string());
             JSONArray items = jsonObject.getJSONArray("items");
 
@@ -83,16 +128,15 @@ public class SpotifyAPI {
                 String name = artistObject.getString("name");
                 topArtists.add(name);
             }
-        } catch (JSONException e) {
-            throw new RuntimeException(e);
         }
+
+        Log.d("SpotifyAPI", "Top artists fetched successfully.");
 
         return topArtists;
     }
 
-    private List<String> topSongs() {
+    private List<String> fetchTopSongs() throws IOException, JSONException {
         List<String> topSongs = new ArrayList<>();
-
 
         Request request = new Request.Builder()
                 .url(urlBuilder(songsEndpoint))
@@ -100,9 +144,11 @@ public class SpotifyAPI {
                 .build();
 
         try (Response response = client.newCall(request).execute()) {
-            if (!response.isSuccessful()) throw new IOException("Unexpected code " + response);
+            if (!response.isSuccessful()) {
+                Log.d("SpotifyAPI", "Top songs fetched unsuccessfully.");
+                throw new IOException("Unexpected code " + response);
+            }
 
-            assert response.body() != null;
             JSONObject jsonObject = new JSONObject(response.body().string());
             JSONArray items = jsonObject.getJSONArray("items");
 
@@ -111,14 +157,14 @@ public class SpotifyAPI {
                 String name = artistObject.getString("name");
                 topSongs.add(name);
             }
-        } catch (JSONException | IOException e) {
-            throw new RuntimeException(e);
         }
+
+        Log.d("SpotifyAPI", "Top songs fetched successfully.");
 
         return topSongs;
     }
 
-    private List<String> topGenres() {
+    private List<String> fetchTopGenres() throws IOException, JSONException {
         List<String> topGenres = new ArrayList<>();
         Map<String, Integer> topGenresMap = new HashMap<>();
 
@@ -128,9 +174,11 @@ public class SpotifyAPI {
                 .build();
 
         try (Response response = client.newCall(request).execute()) {
-            if (!response.isSuccessful()) throw new IOException("Unexpected code " + response);
+            if (!response.isSuccessful()) {
+                Log.d("SpotifyAPI", "Top genres fetched unsuccessfully.");
+                throw new IOException("Unexpected code " + response);
+            }
 
-            assert response.body() != null;
             JSONObject jsonObject = new JSONObject(response.body().string());
             JSONArray items = jsonObject.getJSONArray("items");
 
@@ -143,8 +191,6 @@ public class SpotifyAPI {
                     topGenresMap.put(genre, topGenresMap.getOrDefault(genre, 0) + 1);
                 }
             }
-        } catch (JSONException | IOException e) {
-            throw new RuntimeException(e);
         }
 
         List<Map.Entry<String, Integer>> sortedList = new ArrayList<>(topGenresMap.entrySet());
@@ -158,11 +204,13 @@ public class SpotifyAPI {
             count++;
         }
 
+        Log.d("SpotifyAPI", "Top genres fetched successfully.");
+
         return topGenres;
     }
 
     public void setTimeRange(String timeRange) {
         this.timeRange = timeRange;
-        updateData();
+        new UpdateDataTask().execute();
     }
 }
