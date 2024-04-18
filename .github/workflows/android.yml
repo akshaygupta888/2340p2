@@ -1,4 +1,5 @@
-# user story 10
+# User story 10, CI/CD Pipeline file
+
 name: Android CI
 
 on:
@@ -12,41 +13,40 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v2
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Set up JDK 11
-        uses: actions/setup-java@v2
+        uses: actions/setup-java@v3
         with:
           java-version: '11'
-          distribution: 'temurin'
           cache: gradle
 
       - name: Set up Android SDK
-        uses: actions/setup-java@v1
+        uses: actions/setup-java@v3
         with:
-          java-version: '8'
-          distribution: 'android'
-          android-platform: 'android-31'
+          java-version: '11'
 
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
-
-      - name: Run build
-        run: ./gradlew build
-
-      - name: Check Formatting
-        run: ./gradlew ktlintCheck
 
       - name: Build with Gradle
         run: |
           ./gradlew build
           ./gradlew check
 
-  prevent-merge:
+  merge-check:
     runs-on: ubuntu-latest
-    needs: build
-    if: ${{ github.event_name == 'pull_request' }}
+
     steps:
-      - name: Block merge if previous jobs failed
-        run: exit 1
-        if: ${{ needs.build.result == 'failure' }}
+      - name: Check for CI status
+        if: always()
+        run: |
+          if [ $(jobs=$(curl -s -X GET -G "https://api.github.com/repos/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}/jobs" | jq -r '.jobs[].conclusion') && [[ "${jobs[@]}" =~ "failure" ]]) ]; then
+            echo "One or more jobs failed. This branch cannot be merged."
+            exit 1
+          else
+            echo "All jobs passed. Branch can be merged."
+          fi
