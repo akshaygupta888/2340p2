@@ -28,7 +28,7 @@ jobs:
         with:
           java-version: '8'
           distribution: 'android'
-          # Specify the Android SDK version here if needed
+          sdk-version: '31'
 
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
