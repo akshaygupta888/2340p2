@@ -17,7 +17,7 @@
             android:id="@+id/main_header"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Spotify Wrapped Application"/>
+            android:text="Spotify Wrapped Applicationfasdfasdf" />
 
         <Button
             android:id="@+id/login_button"
