@@ -11,8 +11,6 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
-import androidx.navigation.ui.AppBarConfiguration;
-
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -21,6 +19,9 @@ import com.spotify.sdk.android.auth.AuthorizationRequest;
 import com.spotify.sdk.android.auth.AuthorizationResponse;
 import com.spotifyapp.ui.login.LoginFragment;
 import com.spotifyapp.ui.login.SignUpFragment;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class MainActivity extends AppCompatActivity implements SignUpFragment.OnButtonClickListener {
     private static final int REQUEST_CODE = 1337;
@@ -102,12 +103,12 @@ public class MainActivity extends AppCompatActivity implements SignUpFragment.On
         FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
         FirebaseUser currentUser = firebaseAuth.getCurrentUser();
 
-        Log.d("LOGIN", "here!");
-
         if (currentUser != null) {
             FirebaseFirestore db = FirebaseFirestore.getInstance();
+            Map<String, Object> userData = new HashMap<>();
+            userData.put("authToken", authToken);
             db.collection("users").document(currentUser.getUid())
-                    .update("authToken", authToken)
+                    .set(userData)
                     .addOnSuccessListener(aVoid -> {
                         Toast.makeText(MainActivity.this, "Auth token stored successfully", Toast.LENGTH_SHORT).show();
                     })

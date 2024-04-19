@@ -11,6 +11,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.Objects;
 
@@ -78,14 +79,25 @@ public class UserSettingsActivity extends AppCompatActivity {
     }
 
     private void deleteAccount() {
-        currentUser.delete()
+        String uid = currentUser.getUid();
+
+        FirebaseFirestore.getInstance().collection("users").document(uid)
+                .delete()
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
-                        startActivity(new Intent(UserSettingsActivity.this, MainActivity.class));
-                        finish();
+                        currentUser.delete()
+                                .addOnCompleteListener(task1 -> {
+                                    if (task1.isSuccessful()) {
+                                        startActivity(new Intent(UserSettingsActivity.this, MainActivity.class));
+                                        finish();
+                                    } else {
+                                        Toast.makeText(UserSettingsActivity.this, "Failed to delete user account", Toast.LENGTH_SHORT).show();
+                                    }
+                                });
                     } else {
-                        Toast.makeText(UserSettingsActivity.this, "Failed to delete user account", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(UserSettingsActivity.this, "Failed to delete user document", Toast.LENGTH_SHORT).show();
                     }
                 });
     }
+
 }

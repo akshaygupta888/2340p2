@@ -1,7 +1,6 @@
 package com.spotifyapp.ui.login;
 
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -12,17 +11,19 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
+
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.spotifyapp.R;
-import com.spotifyapp.WrappedActivity;
 import com.spotifyapp.databinding.FragmentSignUpBinding;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -133,36 +134,22 @@ public class SignUpFragment extends Fragment {
         firebaseAuth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(requireActivity(), task -> {
                     if (task.isSuccessful()) {
-                        FirebaseUser user = firebaseAuth.getCurrentUser();
-                        if (user != null) {
-                            createFirestoreDocument(user);
-                        }
+                        // Hide input fields and show Connect Spotify button
+                        emailText.setVisibility(View.GONE);
+                        passwordText.setVisibility(View.GONE);
+                        loginButton.setVisibility(View.GONE);
+                        signupButton.setVisibility(View.GONE);
+                        submitButton.setVisibility(View.GONE);
+                        connectSpotifyButton.setVisibility(View.VISIBLE);
+                        connectSpotifyButton.setOnClickListener((v) -> {
+                            if (listener != null) {
+                                listener.onButtonClicked();
+                            }
+                        });
                     } else {
                         showSignUpFailed(R.string.sign_up_failed);
                     }
                 });
-    }
-
-    private void createFirestoreDocument(FirebaseUser user) {
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-        Map<String, Object> userData = new HashMap<>();
-        userData.put("email", user.getEmail());
-        db.collection("users").document(user.getUid())
-                .set(userData)
-                .addOnSuccessListener(unused -> {
-                    emailText.setVisibility(View.GONE);
-                    passwordText.setVisibility(View.GONE);
-                    loginButton.setVisibility(View.GONE);
-                    signupButton.setVisibility(View.GONE);
-                    submitButton.setVisibility(View.GONE);
-                    connectSpotifyButton.setVisibility(View.VISIBLE);
-                    connectSpotifyButton.setOnClickListener((v) -> {
-                        if (listener != null) {
-                            listener.onButtonClicked();
-                        }
-                    });
-                })
-                .addOnFailureListener(e -> showSignUpFailed(R.string.sign_up_failed));
     }
 
     private void showSignUpFailed(@StringRes Integer errorString) {
