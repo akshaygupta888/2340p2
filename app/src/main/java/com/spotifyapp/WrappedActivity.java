@@ -1,6 +1,8 @@
 package com.spotifyapp;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -12,6 +14,8 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.spotifyapp.ui.main.SectionsPagerAdapter;
 import com.spotifyapp.databinding.ActivityWrappedBinding;
+import android.widget.Button;
+
 
 public class WrappedActivity extends AppCompatActivity implements SpotifyAPI.SpotifyDataListener {
 
@@ -26,6 +30,16 @@ public class WrappedActivity extends AppCompatActivity implements SpotifyAPI.Spo
         super.onCreate(savedInstanceState);
         binding = ActivityWrappedBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+
+        Button settingsButton = findViewById(R.id.settings_button);
+        settingsButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Launch UserSettings activity
+                Intent intent = new Intent(WrappedActivity.this, UserSettingsActivity.class);
+                startActivity(intent);
+            }
+        });
 
         db = FirebaseFirestore.getInstance();
         getUserToken();
