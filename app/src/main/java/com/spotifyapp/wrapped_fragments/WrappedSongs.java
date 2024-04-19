@@ -22,7 +22,6 @@ public class WrappedSongs extends Fragment {
 
     private static final String ARG_SECTION_NUMBER = "2";
     private RecyclerView recyclerView;
-    private PageViewModel pageViewModel;
     private SpotifyAPI spotifyAPI;
 
     public WrappedSongs() {}
@@ -44,7 +43,7 @@ public class WrappedSongs extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        pageViewModel = new ViewModelProvider(this).get(PageViewModel.class);
+        PageViewModel pageViewModel = new ViewModelProvider(this).get(PageViewModel.class);
         int index = 2;
         if (getArguments() != null) {
             index = getArguments().getInt(ARG_SECTION_NUMBER);
@@ -66,7 +65,7 @@ public class WrappedSongs extends Fragment {
         recyclerView.setAdapter(adapter);
 
         if (spotifyAPI != null && spotifyAPI.getTopSongs() != null) {
-            List<String> topSongs = spotifyAPI.getTopSongs();
+            List<SpotifyAPI.TopTrack> topSongs = spotifyAPI.getTopSongs();
             Log.d("WrappedSongsFragment", "Top Songs: " + topSongs);
             updateAdapter(topSongs);
         } else {
@@ -77,7 +76,7 @@ public class WrappedSongs extends Fragment {
     }
 
 
-    private void updateAdapter(List<String> topSongs) {
+    private void updateAdapter(List<SpotifyAPI.TopTrack> topSongs) {
         SongsViewAdapter adapter = (SongsViewAdapter) recyclerView.getAdapter();
         if (adapter != null) {
             adapter.updateData(topSongs);

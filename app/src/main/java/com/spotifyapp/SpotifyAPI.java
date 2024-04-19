@@ -33,14 +33,14 @@ public class SpotifyAPI {
     private final static String songsEndpoint = "https://api.spotify.com/v1/me/top/tracks";
     private final SpotifyDataListener dataListener;
     private List<String> topArtists;
-    private List<String> topSongs;
+    private List<TopTrack> topSongs;
     private List<String> topGenres;
 
     public List<String> getTopArtists() {
         return topArtists;
     }
 
-    public List<String> getTopSongs() {
+    public List<TopTrack> getTopSongs() {
         return topSongs;
     }
 
@@ -133,8 +133,8 @@ public class SpotifyAPI {
         return topArtists;
     }
 
-    private List<String> fetchTopSongs() throws IOException, JSONException {
-        List<String> topSongs = new ArrayList<>();
+    private List<TopTrack> fetchTopSongs() throws IOException, JSONException {
+        List<TopTrack> topSongs = new ArrayList<>();
 
         Request request = new Request.Builder()
                 .url(urlBuilder(songsEndpoint))
@@ -147,14 +147,14 @@ public class SpotifyAPI {
                 throw new IOException("Unexpected code " + response);
             }
 
-            assert response.body() != null;
             JSONObject jsonObject = new JSONObject(response.body().string());
             JSONArray items = jsonObject.getJSONArray("items");
 
             for (int i = 0; i < items.length(); i++) {
-                JSONObject artistObject = items.getJSONObject(i);
-                String name = artistObject.getString("name");
-                topSongs.add(name);
+                JSONObject trackObject = items.getJSONObject(i);
+                String name = trackObject.getString("name");
+                String previewUrl = trackObject.getString("preview_url");
+                topSongs.add(new TopTrack(name, previewUrl));
             }
         }
 
@@ -211,5 +211,15 @@ public class SpotifyAPI {
     public void setTimeRange(String timeRange) {
         this.timeRange = timeRange;
         new UpdateDataTask().execute();
+    }
+
+    public static class TopTrack {
+        public String name;
+        public String previewUrl;
+
+        public TopTrack(String name, String previewUrl) {
+            this.name = name;
+            this.previewUrl = previewUrl;
+        }
     }
 }

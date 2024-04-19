@@ -17,4 +17,11 @@
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/text_margin"
         android:textAppearance="?attr/textAppearanceListItem" />
+
+    <Button
+        android:id="@+id/play_preview_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Play preview" />
+
 </LinearLayout>
