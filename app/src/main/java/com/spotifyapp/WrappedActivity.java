@@ -2,7 +2,7 @@ package com.spotifyapp;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.View;
+import android.widget.Button;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -14,16 +14,14 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.spotifyapp.ui.main.SectionsPagerAdapter;
 import com.spotifyapp.databinding.ActivityWrappedBinding;
-import android.widget.Button;
-
 
 public class WrappedActivity extends AppCompatActivity implements SpotifyAPI.SpotifyDataListener {
 
     private ActivityWrappedBinding binding;
     private FirebaseFirestore db;
     private String authToken;
-    private String uid;
     private SpotifyAPI spotifyAPI;
+    private Button shortButton, mediumButton, longButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,15 +29,32 @@ public class WrappedActivity extends AppCompatActivity implements SpotifyAPI.Spo
         binding = ActivityWrappedBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        Button settingsButton = findViewById(R.id.settings_button);
-        settingsButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // Launch UserSettings activity
-                Intent intent = new Intent(WrappedActivity.this, UserSettingsActivity.class);
-                startActivity(intent);
-            }
+        shortButton = findViewById(R.id.short_button);
+        mediumButton = findViewById(R.id.medium_button);
+        longButton = findViewById(R.id.long_button);
+
+        shortButton.setOnClickListener(v -> {
+            spotifyAPI.setTimeRange("short_term");
+            shortButton.setEnabled(false);
+            mediumButton.setEnabled(true);
+            longButton.setEnabled(true);
         });
+
+        mediumButton.setOnClickListener(v -> {
+            spotifyAPI.setTimeRange("medium_term");
+            shortButton.setEnabled(true);
+            mediumButton.setEnabled(false);
+            longButton.setEnabled(true);
+        });
+
+        longButton.setOnClickListener(v -> {
+            spotifyAPI.setTimeRange("long_term");
+            shortButton.setEnabled(true);
+            mediumButton.setEnabled(true);
+            longButton.setEnabled(false);
+        });
+
+        longButton.setEnabled(false);
 
         db = FirebaseFirestore.getInstance();
         getUserToken();
@@ -48,7 +63,7 @@ public class WrappedActivity extends AppCompatActivity implements SpotifyAPI.Spo
     private void getUserToken() {
         FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
         if (currentUser != null) {
-            uid = currentUser.getUid();
+            String uid = currentUser.getUid();
             db.collection("users").document(uid)
                     .get()
                     .addOnSuccessListener(documentSnapshot -> {
@@ -59,9 +74,7 @@ public class WrappedActivity extends AppCompatActivity implements SpotifyAPI.Spo
                             Toast.makeText(this, "Failed to get spotify credentials", Toast.LENGTH_SHORT).show();
                         }
                     })
-                    .addOnFailureListener(e -> {
-                        Toast.makeText(this, "Failed to get spotify credentials", Toast.LENGTH_SHORT).show();
-                    });
+                    .addOnFailureListener(e -> Toast.makeText(this, "Failed to get spotify credentials", Toast.LENGTH_SHORT).show());
         }
     }
 

@@ -31,8 +31,7 @@ public class SpotifyAPI {
     private final static String limit = "10";
     private final static String artistsEndpoint = "https://api.spotify.com/v1/me/top/artists";
     private final static String songsEndpoint = "https://api.spotify.com/v1/me/top/tracks";
-    private final WeakReference<Context> contextRef;
-    private SpotifyDataListener dataListener;
+    private final SpotifyDataListener dataListener;
     private List<String> topArtists;
     private List<String> topSongs;
     private List<String> topGenres;
@@ -58,7 +57,7 @@ public class SpotifyAPI {
         this.accessToken = accessToken;
         this.client = new OkHttpClient();
         this.timeRange = "long_term";
-        this.contextRef = new WeakReference<>(context);
+        new WeakReference<>(context);
         this.dataListener = listener;
         new UpdateDataTask().execute();
     }
@@ -82,12 +81,10 @@ public class SpotifyAPI {
         @Override
         protected void onPostExecute(Boolean success) {
             if (success) {
-                // Notify the listener that data loading is complete
                 if (dataListener != null) {
                     dataListener.onDataLoaded();
                 }
             } else {
-                // Notify the listener about the error
                 if (dataListener != null) {
                     dataListener.onDataLoadError("Error loading data");
                 }
@@ -120,6 +117,7 @@ public class SpotifyAPI {
                 throw new IOException("Unexpected code " + response);
             }
 
+            assert response.body() != null;
             JSONObject jsonObject = new JSONObject(response.body().string());
             JSONArray items = jsonObject.getJSONArray("items");
 
@@ -149,6 +147,7 @@ public class SpotifyAPI {
                 throw new IOException("Unexpected code " + response);
             }
 
+            assert response.body() != null;
             JSONObject jsonObject = new JSONObject(response.body().string());
             JSONArray items = jsonObject.getJSONArray("items");
 
@@ -179,6 +178,7 @@ public class SpotifyAPI {
                 throw new IOException("Unexpected code " + response);
             }
 
+            assert response.body() != null;
             JSONObject jsonObject = new JSONObject(response.body().string());
             JSONArray items = jsonObject.getJSONArray("items");
 
@@ -196,7 +196,6 @@ public class SpotifyAPI {
         List<Map.Entry<String, Integer>> sortedList = new ArrayList<>(topGenresMap.entrySet());
         sortedList.sort(Map.Entry.comparingByValue(Comparator.reverseOrder()));
 
-        // Extracting top 10 genres
         int count = 0;
         for (Map.Entry<String, Integer> entry : sortedList) {
             if (count >= 10) break;
