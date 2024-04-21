@@ -49,7 +49,8 @@
     android:orientation="horizontal"
     android:paddingStart="16dp"
     android:paddingTop="16dp"
-    android:paddingEnd="16dp" >
+    android:paddingEnd="16dp"
+    android:backgroundTint="@color/black">
 
 <com.google.android.material.button.MaterialButton
     android:id="@+id/short_button"
@@ -87,15 +88,17 @@
     <com.google.android.material.tabs.TabLayout
         android:id="@+id/tabs"
         android:layout_width="match_parent"
-        android:layout_height="10dp"
+        android:layout_height="30dp"
+        app:tabBackground="@color/black"
+        app:tabTextColor="@color/white"
         app:tabIndicatorColor="#1DB954"
-        app:tabSelectedTextColor="#1DB954"
-        app:tabTextColor="@color/black" />
+        app:tabSelectedTextColor="#1DB954" />
     </com.google.android.material.appbar.AppBarLayout>
 
 <androidx.viewpager.widget.ViewPager
 android:id="@+id/view_pager"
 android:layout_width="match_parent"
 android:layout_height="match_parent"
-app:layout_behavior="@string/appbar_scrolling_view_behavior" />
+app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    />
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

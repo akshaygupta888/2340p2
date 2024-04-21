@@ -10,4 +10,5 @@
     android:layout_marginRight="16dp"
     app:layoutManager="LinearLayoutManager"
     tools:context=".wrapped_fragments.WrappedSongs"
-    tools:listitem="@layout/fragment_wrapped_songs" />
+    tools:listitem="@layout/fragment_wrapped_songs"
+    android:textColor="@color/white"/>

@@ -23,6 +23,7 @@
         android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
         android:textColor="#1DB954"/>
+
     <EditText
         android:id="@+id/email"
         android:layout_width="0dp"
@@ -35,7 +36,9 @@
         android:inputType="textEmailAddress"
         android:selectAllOnFocus="true"
         android:textColorHint="@android:color/white"
+        android:textColor="@color/white"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -49,6 +52,7 @@
         android:autofillHints="@string/prompt_password"
         android:hint="@string/prompt_password"
         android:imeActionLabel="@string/action_login"
+        android:textColor="@color/white"
         android:imeOptions="actionDone"
         android:inputType="textPassword"
         android:selectAllOnFocus="true"

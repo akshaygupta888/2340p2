@@ -11,4 +11,6 @@
     app:layoutManager="LinearLayoutManager"
     tools:context=".wrapped_fragments.WrappedArtists"
     tools:listitem="@layout/fragment_wrapped_artists"
-    android:background="@color/black" />
+    android:background="@color/black"
+    android:textColor="@color/white"
+    />
