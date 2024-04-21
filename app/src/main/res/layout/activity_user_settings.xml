@@ -5,21 +5,29 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
+    android:background="@color/black"
     tools:context=".UserSettingsActivity">
 
-    <com.google.android.material.appbar.AppBarLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:fitsSystemWindows="true">
+<com.google.android.material.appbar.AppBarLayout
+android:layout_width="match_parent"
+android:layout_height="wrap_content"
+android:fitsSystemWindows="true"
+android:background="@color/black"
+    android:orientation="vertical"
+    android:padding="16dp">
 
-        <com.google.android.material.appbar.MaterialToolbar
-            android:id="@+id/toolbar"
-            android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            app:title="User Settings" />
+<com.google.android.material.appbar.MaterialToolbar
+android:id="@+id/toolbar"
+android:layout_width="match_parent"
+android:layout_height="?attr/actionBarSize"
+app:title="User Settings"
+app:titleTextColor="#1ED760"
+    android:background="@color/black"
+    />
 
     </com.google.android.material.appbar.AppBarLayout>
 
-    <include layout="@layout/content_user_settings" />
+<include layout="@layout/content_user_settings" />
 
-</androidx.coordinatorlayout.widget.CoordinatorLayout>
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
+
