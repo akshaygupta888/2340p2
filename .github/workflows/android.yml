@@ -33,3 +33,17 @@ jobs:
         with:
           name : spotify-wrapped-2340.apk
           path : app/build/outputs/apk/debug/app-debug.apk
+
+  merge-check:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check for CI status
+        if: always()
+        run: |
+          if [ $(jobs=$(curl -s -X GET -G "https://api.github.com/repos/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}/jobs" | jq -r '.jobs[].conclusion') && [[ "${jobs[@]}" =~ "failure" ]]) ]; then
+            echo "One or more jobs failed. This branch cannot be merged."
+            exit 1
+          else
+            echo "All jobs passed. Branch can be merged."
+          fi
