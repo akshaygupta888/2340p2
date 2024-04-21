@@ -21,7 +21,7 @@ public class WrappedActivity extends AppCompatActivity implements SpotifyAPI.Spo
     private FirebaseFirestore db;
     private String authToken;
     private SpotifyAPI spotifyAPI;
-    private Button shortButton, mediumButton, longButton;
+    private Button shortButton, mediumButton, longButton, settingsButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,6 +32,7 @@ public class WrappedActivity extends AppCompatActivity implements SpotifyAPI.Spo
         shortButton = findViewById(R.id.short_button);
         mediumButton = findViewById(R.id.medium_button);
         longButton = findViewById(R.id.long_button);
+        settingsButton = findViewById(R.id.settings_button);
 
         shortButton.setOnClickListener(v -> {
             spotifyAPI.setTimeRange("short_term");
@@ -55,6 +56,11 @@ public class WrappedActivity extends AppCompatActivity implements SpotifyAPI.Spo
         });
 
         longButton.setEnabled(false);
+
+        settingsButton.setOnClickListener(v -> {
+            Intent intent = new Intent(WrappedActivity.this, UserSettingsActivity.class);
+            startActivity(intent);
+        });
 
         db = FirebaseFirestore.getInstance();
         getUserToken();
