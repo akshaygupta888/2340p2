@@ -5,6 +5,7 @@
     android:id="@+id/activity_main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#000000"
     android:launchMode="singleInstance"
     tools:context=".MainActivity">
 
@@ -17,21 +18,31 @@
             android:id="@+id/main_header"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Spotify Wrapped Application"/>
+            android:text="Spotify Wrapped Application"
+            android:textColor="#1DB954"
+            android:textSize="24sp"
+            android:gravity="center"
+            android:layout_marginBottom="24dp"/>
 
-        <Button
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/login_button"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:text="Login"
+            app:cornerRadius="28dp"
             android:layout_margin="8dp"
-            android:text="Login" />
+            android:textColor="#000000"
+            app:backgroundTint="#1ED760" />
 
-        <Button
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/signup_button"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:text="Signup"
+            app:cornerRadius="28dp"
             android:layout_margin="8dp"
-            android:text="Signup" />
+            android:textColor="#000000"
+            app:backgroundTint="#1ED760" />
 
         <FrameLayout
             android:id="@+id/fragment_authentication"

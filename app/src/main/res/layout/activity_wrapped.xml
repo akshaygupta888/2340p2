@@ -4,86 +4,101 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/black"
     tools:context=".WrappedActivity">
 
-    <com.google.android.material.appbar.AppBarLayout
+<com.google.android.material.appbar.AppBarLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:theme="@style/Theme.SpotifyApp.AppBarOverlay"
+    android:background="@color/black">
+
+<LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:paddingStart="16dp"
+    android:paddingTop="16dp"
+    android:paddingEnd="16dp">
+
+<TextView
+    android:id="@+id/title"
+    android:layout_width="0dp"
+    android:layout_height="wrap_content"
+    android:layout_weight="1"
+    android:gravity="center_vertical"
+    android:minHeight="?actionBarSize"
+    android:text="@string/app_name"
+    android:textColor="#1DB954"
+    android:textAppearance="@style/TextAppearance.Widget.AppCompat.Toolbar.Title" />
+
+    <com.google.android.material.button.MaterialButton
+    android:id="@+id/settings_button"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:text="Settings"
+    android:textColor="#000000"
+    android:gravity="center_vertical"
+        app:backgroundTint="#1ED760"/>
+
+</LinearLayout>
+
+<LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:paddingStart="16dp"
+    android:paddingTop="16dp"
+    android:paddingEnd="16dp" >
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/short_button"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:text="Short"
+        android:textColor="#000000"
+        android:gravity="center"
+        app:backgroundTint="#1ED760"
+        android:alpha="1.0" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/medium_button"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:text="Medium"
+        android:textColor="#000000"
+        android:gravity="center"
+        app:backgroundTint="#1ED760"
+        android:alpha="1.0" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/long_button"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:text="Long"
+        android:textColor="#000000"
+        android:gravity="center"
+        app:backgroundTint="#1ED760"
+        android:alpha="1.0" />
+
+</LinearLayout>
+
+    <com.google.android.material.tabs.TabLayout
+        android:id="@+id/tabs"
+        android:background="@color/black"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:theme="@style/Theme.SpotifyApp.AppBarOverlay">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:paddingStart="16dp"
-            android:paddingTop="16dp"
-            android:paddingEnd="16dp">
-
-            <TextView
-                android:id="@+id/title"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="center_vertical"
-                android:minHeight="?actionBarSize"
-                android:text="@string/app_name"
-                android:textColor="@color/black"
-                android:textAppearance="@style/TextAppearance.Widget.AppCompat.Toolbar.Title" />
-
-            <Button
-                android:id="@+id/settings_button"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Settings"
-                android:gravity="center_vertical"/>
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:paddingStart="16dp"
-            android:paddingTop="16dp"
-            android:paddingEnd="16dp">
-
-            <Button
-                android:id="@+id/short_button"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="Short"
-                android:gravity="center" />
-
-            <Button
-                android:id="@+id/medium_button"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="Medium"
-                android:gravity="center" />
-
-            <Button
-                android:id="@+id/long_button"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="Long"
-                android:gravity="center" />
-
-        </LinearLayout>
-
-        <com.google.android.material.tabs.TabLayout
-            android:id="@+id/tabs"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-
+        app:tabIndicatorColor="#1DB954"
+        app:tabSelectedTextColor="#1DB954"
+        app:tabTextColor="@color/white" />
     </com.google.android.material.appbar.AppBarLayout>
 
-    <androidx.viewpager.widget.ViewPager
-        android:id="@+id/view_pager"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior" />
-
+<androidx.viewpager.widget.ViewPager
+android:id="@+id/view_pager"
+android:layout_width="match_parent"
+android:layout_height="match_parent"
+app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

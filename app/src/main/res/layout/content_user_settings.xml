@@ -3,9 +3,10 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/black"
     app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/back_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -13,7 +14,9 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         android:layout_marginTop="16dp"
-        android:layout_marginEnd="16dp" />
+        android:layout_marginEnd="16dp"
+        app:backgroundTint="#1ED760"
+        android:textColor="#000000" />
 
     <TextView
         android:id="@+id/title"
@@ -24,21 +27,25 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp" />
+        android:layout_marginTop="16dp"
+        android:textColor="#1DB954"/>
 
     <EditText
         android:id="@+id/email_edittext"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:hint="Email"
-        app:layout_constraintEnd_toStartOf="@+id/reset_email_button"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/title"
+        android:layout_marginStart="16dp"
         android:layout_marginTop="32dp"
-    android:layout_marginStart="16dp"
-    android:layout_marginEnd="8dp" />
+        android:layout_marginEnd="8dp"
+        android:hint="Email"
+        android:textColor="@color/white"
+        android:textColorHint="@android:color/white"
+        app:layout_constraintEnd_toStartOf="@+id/reset_email_button"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/title" />
 
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/reset_email_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -46,9 +53,11 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/title"
         android:layout_marginTop="32dp"
-    android:layout_marginEnd="16dp" />
+    android:layout_marginEnd="16dp"
+        app:backgroundTint="#1ED760"
+        android:textColor="#000000" />
 
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/reset_password_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -56,9 +65,11 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/email_edittext"
         android:layout_marginTop="32dp"
-    android:layout_marginStart="16dp" />
+        android:layout_marginStart="16dp"
+        app:backgroundTint="#1ED760"
+        android:textColor="#000000" />
 
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/delete_account_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -66,6 +77,8 @@
         android:layout_marginTop="32dp"
         android:text="Delete Account"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/reset_password_button" />
+        app:layout_constraintTop_toBottomOf="@+id/reset_password_button"
+        app:backgroundTint="#1ED760"
+        android:textColor="#000000" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
