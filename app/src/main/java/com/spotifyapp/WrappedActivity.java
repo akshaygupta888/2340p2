@@ -39,6 +39,9 @@ public class WrappedActivity extends AppCompatActivity implements SpotifyAPI.Spo
             shortButton.setEnabled(false);
             mediumButton.setEnabled(true);
             longButton.setEnabled(true);
+            setButtonAlpha(shortButton, false);
+            setButtonAlpha(mediumButton, true);
+            setButtonAlpha(longButton, true);
         });
 
         mediumButton.setOnClickListener(v -> {
@@ -46,6 +49,9 @@ public class WrappedActivity extends AppCompatActivity implements SpotifyAPI.Spo
             shortButton.setEnabled(true);
             mediumButton.setEnabled(false);
             longButton.setEnabled(true);
+            setButtonAlpha(shortButton, true);
+            setButtonAlpha(mediumButton, false);
+            setButtonAlpha(longButton, true);
         });
 
         longButton.setOnClickListener(v -> {
@@ -53,6 +59,9 @@ public class WrappedActivity extends AppCompatActivity implements SpotifyAPI.Spo
             shortButton.setEnabled(true);
             mediumButton.setEnabled(true);
             longButton.setEnabled(false);
+            setButtonAlpha(shortButton, true);
+            setButtonAlpha(mediumButton, true);
+            setButtonAlpha(longButton, false);
         });
 
         longButton.setEnabled(false);
@@ -64,6 +73,14 @@ public class WrappedActivity extends AppCompatActivity implements SpotifyAPI.Spo
 
         db = FirebaseFirestore.getInstance();
         getUserToken();
+    }
+
+    private void setButtonAlpha(Button button, boolean enabled) {
+        if (enabled) {
+            button.setAlpha(1.0f);
+        } else {
+            button.setAlpha(0.5f);
+        }
     }
 
     private void getUserToken() {

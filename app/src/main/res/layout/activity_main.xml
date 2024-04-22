@@ -42,7 +42,7 @@
             app:cornerRadius="28dp"
             android:layout_margin="8dp"
             android:textColor="#000000"
-            app:backgroundTint="#1DB954" />
+            app:backgroundTint="#1ED760" />
 
         <FrameLayout
             android:id="@+id/fragment_authentication"

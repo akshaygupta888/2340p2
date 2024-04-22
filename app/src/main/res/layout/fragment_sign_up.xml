@@ -32,6 +32,7 @@
         android:layout_marginTop="16dp"
         android:layout_marginEnd="24dp"
         android:autofillHints="@string/prompt_email"
+        android:textColor="@color/white"
         android:hint="@string/prompt_email"
         android:textColorHint="@android:color/white"
         android:inputType="textEmailAddress"
@@ -45,6 +46,7 @@
         android:layout_marginTop="8dp"
         android:layout_marginEnd="24dp"
         android:autofillHints="@string/prompt_password"
+        android:textColor="@color/white"
         android:hint="@string/prompt_password"
         android:imeActionLabel="@string/action_sign_up"
         android:textColorHint="@android:color/white"
@@ -72,5 +74,6 @@
         android:layout_height="wrap_content"
         android:text="Connect with Spotify"
         app:backgroundTint="#1ED760"
+        android:visibility="invisible"
         android:textColor="#000000"/>
 </LinearLayout>
